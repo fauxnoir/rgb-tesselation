@@ -28,6 +28,8 @@ class App {
     this.mesh = null
     this.effect = null
 
+    this.colors = []
+
     this.sceneWidth = window.innerWidth
     this.sceneHeight = window.innerHeight
 
@@ -84,6 +86,7 @@ class App {
     // create world here, do epic shit, make art
 
     this.meshes = []
+    this.materials = []
 
     // composer
     this.composer = new THREE.EffectComposer(this.renderer)
@@ -106,40 +109,70 @@ class App {
     this.unitWidth = this.sceneWidth / 200
 
     // create geometry
-    this.geoPixel = new THREE.PlaneGeometry( this.unitWidth, this.unitWidth )
+    // this.geoPixel = new THREE.PlaneGeometry( this.unitWidth, this.unitWidth )
 
+    var length = 120
+    this.geoPixel = new THREE.Geometry()
+
+    this.geoPixel.vertices.push(
+      new THREE.Vector3((0 - length/2),(0-length/2)),
+      new THREE.Vector3((0 - length/2), length/2),
+      new THREE.Vector3(length/2,length/2),
+      new THREE.Vector3(length/2,(0-length/2)),
+      new THREE.Vector3((0 - length/2),(0-length/2))
+    )
+    
+
+    for (var i = 0; i < 5; i++) {
+      if (i%2 == 0) {
+        this.colors[i] =  new THREE.Color(0XF5C8F6)
+      }else{
+        this.colors[i] =  new THREE.Color(0X9FECDE)
+      }
+    }
+    console.log(this.geoPixel)
     // material
-    this.material = new THREE.MeshPhongMaterial({ 
-      color: '#000', 
-      wireframe: false, 
-      shading: THREE.FlatShading
+    this.material = new THREE.LineBasicMaterial({ 
+      color: '#FFF', 
+      // vertexColors: THREE.VertexColors,
+      depthWrite: false,
+      // shading: THREE.FlatShading
     })
+
+
+    
+    
+    
 
     for (var i=0 ; i < Math.floor(this.sceneWidth / this.unitWidth ); i++) {
       for( var j=0 ; j < Math.floor(this.sceneHeight / this.unitWidth ); j++){
       // for( var j=0 ; j < 1; j++){
-         // create mesh
-         var mesh = new THREE.Mesh( this.geoPixel, this.material )
+      // create mesh
+      var mesh = new THREE.Line( this.geoPixel, this.material )
 
-         // position
-         var posX = this.map_range(i*this.unitWidth, 0, this.sceneWidth, -this.sceneWidth/2, this.sceneWidth*2)
-         var posY = this.map_range(j*this.unitWidth, 0, this.sceneHeight, -this.sceneHeight/2, this.sceneHeight*2)
-         mesh.position.set( i*this.unitWidth - this.sceneWidth / 2 -this.unitWidth/2, j*this.unitWidth - this.sceneHeight/2 + this.unitWidth/2, 0)
+       // position
+       var posX = this.map_range(i*this.unitWidth, 0, this.sceneWidth, -this.sceneWidth/2, this.sceneWidth*2)
+       var posY = this.map_range(j*this.unitWidth, 0, this.sceneHeight, -this.sceneHeight/2, this.sceneHeight*2)
+       mesh.position.set( i*this.unitWidth - this.sceneWidth / 2 -this.unitWidth/2, j*this.unitWidth - this.sceneHeight/2 + this.unitWidth/2, 0)
 
-         // scale
-         mesh.scale.set(.5,.5,.5)
-         
-         var rotation = this.map_range(Math.random()/10, 0, 1, 0, 2*Math.PI)
-         mesh.rotation.set(0,rotation,0)
+       // scale
+       mesh.scale.set(.5,.5,.5)
+       
+       var rotation = this.map_range(Math.random()/10, 0, 1, 0, 2*Math.PI)
+       mesh.rotation.set(0,rotation,0)
 
-         this.meshes.push(mesh)
-         this.scene.add(mesh)
-         this.scene.add( this.light )
+       this.meshes.push(mesh)
+       this.scene.add(mesh)
       }
       
     }
 
-    this.color()
+    this.geoPixel.colorsNeedUpdate = true
+    console.log(this.geoPixel.colorsNeedUpdate)
+    this.geoPixel.colors = this.colors
+
+    // this.scene.add( this.light )
+    // this.color()
     
   }
 
@@ -182,11 +215,11 @@ class App {
   }
 
   color(){
-    for (var i = 0; i < this.meshes.length / 5; i++) {
-      var m = this.meshes[Math.floor(Math.random()*this.meshes.length)]
-      m.material.color.set(0X9FECDE)
-      // m.material.color.set(0XFFFFFF)
-    }
+    // for (var i = 0; i < this.meshes.length / 5; i++) {
+    //   var m = this.meshes[Math.floor(Math.random()*this.meshes.length)]
+    //   // m.material.color.set(0X9FECDE)
+    //   // m.material.color.set(0XFFFFFF)
+    // }
   }
 
   map_range(value, low1, high1, low2, high2) {
