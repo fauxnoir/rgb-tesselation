@@ -55,11 +55,11 @@ class App {
     this.effect.setSize( this.sceneWidth/2, this.sceneHeight/2 )
 
     // camera
-    this.camera = new THREE.PerspectiveCamera(30, this.sceneWidth / this.sceneHeight, 1, 1000)
+    this.camera = new THREE.PerspectiveCamera(80, this.sceneWidth / this.sceneHeight, 1, 500)
     this.camera.position.z = 400
 
     // light
-    this.light = new THREE.AmbientLight( 0xFFFFFF) // soft white light
+    this.light = new THREE.AmbientLight( 0xFFFFFF) 
 
     // scene & world
     this.scene = new THREE.Scene()
@@ -69,14 +69,20 @@ class App {
     TweenMax.ticker.fps(60)
     TweenMax.ticker.addEventListener('tick', () => { this.tick() })
 
+    this.cursorX = 0
+    this.cursorY = 0
+
     // resize handler, resize once
     $(window).resize(() => { this.resize() })
 
     $('body').on('mousemove', (e) => {
-      this.cursorX = this.map_range(e.clientX, 0, window.innerWidth, 0, 1)
-      this.cursorY = this.map_range(e.clientY, 0, window.innerHeight, 0, 1)
+      let cursorX = this.map_range(e.clientX, 0, window.innerWidth, 0, 1)
+      let cursorY = this.map_range(e.clientY, 0, window.innerHeight, 0, 1)
 
-      this.rotate(this.cursorX)
+      TweenMax.to(this, 2, {cursorX: cursorX, ease: Sine.easeOut})
+      TweenMax.to(this, 2, {cursorY: cursorY, ease: Sine.easeOut})
+
+      
     })
   }
 
@@ -103,7 +109,7 @@ class App {
     this.composer.addPass(effectCopy);
 
 
-    this.unitWidth = this.sceneWidth / 200
+    this.unitWidth = this.sceneWidth / 100
 
     // create geometry
     this.geoPixel = new THREE.PlaneGeometry( this.unitWidth, this.unitWidth )
@@ -122,12 +128,12 @@ class App {
          var mesh = new THREE.Mesh( this.geoPixel, this.material )
 
          // position
-         var posX = this.map_range(i*this.unitWidth, 0, this.sceneWidth, -this.sceneWidth/2, this.sceneWidth*2)
-         var posY = this.map_range(j*this.unitWidth, 0, this.sceneHeight, -this.sceneHeight/2, this.sceneHeight*2)
+         var posX = this.map_range(i*this.unitWidth, 0, this.sceneWidth - 100, -this.sceneWidth/2, this.sceneWidth*2)
+         var posY = this.map_range(j*this.unitWidth, 0, this.sceneHeight - 100, -this.sceneHeight/2, this.sceneHeight*2)
          mesh.position.set( i*this.unitWidth - this.sceneWidth / 2 -this.unitWidth/2, j*this.unitWidth - this.sceneHeight/2 + this.unitWidth/2, 0)
 
          // scale
-         mesh.scale.set(.5,.5,.5)
+         mesh.scale.set(.3,.3,.3)
          
          var rotation = this.map_range(Math.random()/10, 0, 1, 0, 2*Math.PI)
          mesh.rotation.set(0,rotation,0)
@@ -151,19 +157,21 @@ class App {
   update() {
     // this.mesh.rotation.x += 0.005
     // this.mesh.rotation.y += 0.01
+    this.rotate(this.cursorX)
+    this.rotate(this.cursorY)
   }
 
   draw() {
-    this.renderer.render(this.scene, this.camera)
-    // this.composer.render()
+    // this.renderer.render(this.scene, this.camera)
+    this.composer.render()
     // this.effect.render(this.scene, this.camera)
   }
 
   resize() {
 
     // update vars
-    this.sceneWidth = window.innerWidth
-    this.sceneHeight = window.innerHeight
+    this.sceneWidth = window.innerWidth + 100
+    this.sceneHeight = window.innerHeight + 100
 
     // update camera
     this.camera.aspect = this.sceneWidth / this.sceneHeight
