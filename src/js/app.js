@@ -41,7 +41,7 @@ class App {
     this.renderer.setSize(this.sceneWidth, this.sceneHeight)
 
     // camera
-    this.camera = new THREE.PerspectiveCamera(70, this.sceneWidth / this.sceneHeight, 1, 1000)
+    this.camera = new THREE.PerspectiveCamera(30, this.sceneWidth / this.sceneHeight, 1, 1000)
     this.camera.position.z = 400
 
     // light
@@ -72,7 +72,7 @@ class App {
 
     this.meshes = []
 
-    this.unitWidth = this.sceneWidth / 70
+    this.unitWidth = this.sceneWidth / 200
 
     // create geometry
     this.geoPixel = new THREE.PlaneGeometry( this.unitWidth, this.unitWidth )
@@ -96,7 +96,7 @@ class App {
          mesh.position.set( i*this.unitWidth - this.sceneWidth / 2 -this.unitWidth/2, j*this.unitWidth - this.sceneHeight/2 + this.unitWidth/2, 0)
 
          // scale
-         mesh.scale.set(.7,.7,.7)
+         mesh.scale.set(.5,.5,.5)
          
          var rotation = this.map_range(Math.random()/10, 0, 1, 0, 2*Math.PI)
          mesh.rotation.set(0,rotation,0)
@@ -144,8 +144,9 @@ class App {
 
   rotate( progress ){
     _.each(this.meshes, (m) => {
-      var rotation = this.map_range(progress, 0, 1, 0, 2*Math.PI)
-      m.rotation.set(0,rotation,0)
+      var rotationY = this.map_range(progress, 0, 1, 0, 3*(2*Math.PI))
+      var rotationX = this.map_range(progress, 0, 1, 0, 3*(2*Math.PI))
+      m.rotation.set(-rotationX,rotationY,0)
     })
   }
 
