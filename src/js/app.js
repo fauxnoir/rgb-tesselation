@@ -7,6 +7,15 @@ import TweenMax from 'gsap'
 import THREE from 'three'
 window.THREE = THREE
 
+import ConvolutionShader from 'three/shaders/ConvolutionShader'
+import CopyShader from 'three/shaders/CopyShader'
+import EffectComposer from 'three/postprocessing/EffectComposer'
+import MaskPass from 'three/postprocessing/MaskPass'
+import RenderPass from 'three/postprocessing/RenderPass'
+import ShaderPass from 'three/postprocessing/ShaderPass'
+import BloomPass from 'three/postprocessing/BloomPass'
+import AnaglyphEffect from 'three/effects/AnaglyphEffect'
+
 // application
 class App {
   constructor() {
@@ -15,7 +24,9 @@ class App {
     this.renderer = null
     this.camera = null
     this.scene = null
+    this.composer = null
     this.mesh = null
+    this.effect = null
 
     this.sceneWidth = window.innerWidth
     this.sceneHeight = window.innerHeight
@@ -40,6 +51,9 @@ class App {
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(this.sceneWidth, this.sceneHeight)
 
+    this.effect = new THREE.AnaglyphEffect( this.renderer )
+    this.effect.setSize( this.sceneWidth/2, this.sceneHeight/2 )
+
     // camera
     this.camera = new THREE.PerspectiveCamera(30, this.sceneWidth / this.sceneHeight, 1, 1000)
     this.camera.position.z = 400
@@ -63,7 +77,6 @@ class App {
       this.cursorY = this.map_range(e.clientY, 0, window.innerHeight, 0, 1)
 
       this.rotate(this.cursorX)
-      console.log(this.cursorX, this.cursorY)
     })
   }
 
@@ -71,6 +84,24 @@ class App {
     // create world here, do epic shit, make art
 
     this.meshes = []
+
+    // composer
+    this.composer = new THREE.EffectComposer(this.renderer)
+
+    // render pass, will render the scene from the camera perspective to the framebuffer
+    let renderPass = new THREE.RenderPass(this.scene, this.camera)
+    this.composer.addPass(renderPass)
+
+    // adds a bloom to the previous pass
+    let bloomPass = new THREE.BloomPass(5, 50, 1.25, 512)
+    bloomPass.enabled = true;
+    this.composer.addPass(bloomPass)
+
+    // copies the previous pass and sets it as the end of the post processing filter chain
+    let effectCopy = new THREE.ShaderPass(THREE.CopyShader);
+    effectCopy.renderToScreen = true;
+    this.composer.addPass(effectCopy);
+
 
     this.unitWidth = this.sceneWidth / 200
 
@@ -110,8 +141,6 @@ class App {
 
     this.color()
     
-    
-
   }
 
   tick() {
@@ -126,6 +155,8 @@ class App {
 
   draw() {
     this.renderer.render(this.scene, this.camera)
+    // this.composer.render()
+    // this.effect.render(this.scene, this.camera)
   }
 
   resize() {
@@ -154,6 +185,7 @@ class App {
     for (var i = 0; i < this.meshes.length / 5; i++) {
       var m = this.meshes[Math.floor(Math.random()*this.meshes.length)]
       m.material.color.set(0X9FECDE)
+      // m.material.color.set(0XFFFFFF)
     }
   }
 

@@ -80,7 +80,8 @@ System.config({
         "./shaders/UnpackDepthRGBAShader": "./examples/js/shaders/UnpackDepthRGBAShader.js",
         "./shaders/VerticalBlurShader": "./examples/js/shaders/VerticalBlurShader.js",
         "./shaders/VerticalTiltShiftShader": "./examples/js/shaders/VerticalTiltShiftShader.js",
-        "./shaders/VignetteShader": "./examples/js/shaders/VignetteShader.js"
+        "./shaders/VignetteShader": "./examples/js/shaders/VignetteShader.js",
+        "./effects/AnaglyphEffect": "./examples/js/effects/AnaglyphEffect.js"
       },
       "meta": {
         "examples/js/loaders/collada/Animation.js": {
@@ -550,6 +551,13 @@ System.config({
             "THREE": "three"
           },
           "exports": "THREE.VignetteShader",
+          "format": "global"
+        },
+        "examples/js/effects/AnaglyphEffect.js": {
+          "globals": {
+            "THREE": "three"
+          },
+          "exports": "THREE.AnaglyphEffect",
           "format": "global"
         }
       }
