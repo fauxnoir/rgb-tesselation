@@ -27,9 +27,12 @@ class App {
     this.composer = null
     this.mesh = null
     this.effect = null
+    this.FPS = 30
+    this.WIDTH = 384
+    this.HEIGHT = 378
 
-    this.sceneWidth = window.innerWidth
-    this.sceneHeight = window.innerHeight
+    this.sceneWidth = this.WIDTH*3
+    this.sceneHeight = this.HEIGHT*2
 
     $(document).ready(() => {
       this.init()
@@ -66,24 +69,32 @@ class App {
     this.createWorld()
 
     // render & animation ticker
-    TweenMax.ticker.fps(60)
-    TweenMax.ticker.addEventListener('tick', () => { this.tick() })
+    // TweenMax.ticker.fps(60)
+    // TweenMax.ticker.addEventListener('tick', () => { this.tick() })
+
+    setInterval(() => {
+      this.tick()
+    }, 1000/this.FPS)
 
     this.cursorX = 0
     this.cursorY = 0
 
+    setInterval(()=>{
+      this.change()
+    }, 1000)
+
     // resize handler, resize once
     $(window).resize(() => { this.resize() })
 
-    $('body').on('mousemove', (e) => {
-      let cursorX = this.map_range(e.clientX, 0, window.innerWidth, 0, 1)
-      let cursorY = this.map_range(e.clientY, 0, window.innerHeight, 0, 1)
+    // $('body').on('mousemove', (e) => {
+    //   let cursorX = this.map_range(e.clientX, 0, window.innerWidth, 0, 1)
+    //   let cursorY = this.map_range(e.clientY, 0, window.innerHeight, 0, 1)
 
-      TweenMax.to(this, 2, {cursorX: cursorX, ease: Sine.easeOut})
-      TweenMax.to(this, 2, {cursorY: cursorY, ease: Sine.easeOut})
+    //   TweenMax.to(this, 2, {cursorX: cursorX, ease: Sine.easeOut})
+    //   TweenMax.to(this, 2, {cursorY: cursorY, ease: Sine.easeOut})
 
       
-    })
+    // })
   }
 
   createWorld() {
@@ -109,7 +120,7 @@ class App {
     this.composer.addPass(effectCopy);
 
 
-    this.unitWidth = this.sceneWidth / 100
+    this.unitWidth = this.sceneWidth / 50
 
     // create geometry
     this.geoPixel = new THREE.PlaneGeometry( this.unitWidth, this.unitWidth )
@@ -128,8 +139,8 @@ class App {
          var mesh = new THREE.Mesh( this.geoPixel, this.material )
 
          // position
-         var posX = this.map_range(i*this.unitWidth, 0, this.sceneWidth - 100, -this.sceneWidth/2, this.sceneWidth*2)
-         var posY = this.map_range(j*this.unitWidth, 0, this.sceneHeight - 100, -this.sceneHeight/2, this.sceneHeight*2)
+         var posX = this.map_range(i*this.unitWidth, 0, this.sceneWidth, -this.sceneWidth/2, this.sceneWidth*2)
+         var posY = this.map_range(j*this.unitWidth, 0, this.sceneHeight, -this.sceneHeight/2, this.sceneHeight*2)
          mesh.position.set( i*this.unitWidth - this.sceneWidth / 2 -this.unitWidth/2, j*this.unitWidth - this.sceneHeight/2 + this.unitWidth/2, 0)
 
          // scale
@@ -158,7 +169,6 @@ class App {
     // this.mesh.rotation.x += 0.005
     // this.mesh.rotation.y += 0.01
     this.rotate(this.cursorX)
-    this.rotate(this.cursorY)
   }
 
   draw() {
@@ -170,8 +180,8 @@ class App {
   resize() {
 
     // update vars
-    this.sceneWidth = window.innerWidth + 100
-    this.sceneHeight = window.innerHeight + 100
+    this.sceneWidth = this.WIDTH + 100
+    this.sceneHeight = this.HEIGHT + 100
 
     // update camera
     this.camera.aspect = this.sceneWidth / this.sceneHeight
@@ -187,6 +197,15 @@ class App {
       var rotationX = this.map_range(progress, 0, 1, 0, 3*(2*Math.PI))
       m.rotation.set(-rotationX,rotationY,0)
     })
+  }
+
+  change(){
+    console.log('lel')
+    let cursorX = Math.random()
+    let cursorY = Math.random()
+
+    TweenMax.to(this, .2, {cursorX: cursorX, ease: Sine.easeOut})
+    TweenMax.to(this, .2, {cursorY: cursorY, ease: Sine.easeOut})
   }
 
   color(){
